@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:         main.cpp
 // Description:  The main entry point of Benchmark
-// Author:       Mariano Trebino
-// Modified by:  Alexey Orlov
+// Author:       Mariano Trebino (https://github.com/mtrebi)
+// Modified by:  Alexey Orlov (https://github.com/m110h)
 // Modified:     08/08/2020
 // Licence:      MIT licence
 /////////////////////////////////////////////////////////////////////////////

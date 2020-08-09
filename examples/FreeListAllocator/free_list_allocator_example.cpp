@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:        free_list_allocator_example.cpp
 // Purpose:     It shows how to use FreeListAllocator
-// Author:      Alexey Orlov
+// Author:      Alexey Orlov (https://github.com/m110h)
 // Created:     02/07/2020
 // Licence:     MIT licence
 /////////////////////////////////////////////////////////////////////////////

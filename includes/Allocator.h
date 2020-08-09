@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:         Allocator.h
 // Description:  ...
-// Author:       Mariano Trebino
-// Modified by:  Alexey Orlov
+// Author:       Mariano Trebino (https://github.com/mtrebi)
+// Modified by:  Alexey Orlov (https://github.com/m110h)
 // Modified:     08/08/2020
 // Licence:      MIT licence
 /////////////////////////////////////////////////////////////////////////////
@@ -22,10 +22,9 @@ public:
     virtual ~Allocator();
 
     virtual void* Allocate(const std::size_t size, const std::size_t alignment = 0) = 0;
-
     virtual void Free(void* ptr) = 0;
-
     virtual void Init() = 0;
+    virtual void Reset() = 0;
 
     std::size_t GetUsed();
     std::size_t GetPeak();

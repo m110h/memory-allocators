@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:         CAllocator.cpp
 // Description:  ...
-// Author:       Mariano Trebino
-// Modified by:  Alexey Orlov
+// Author:       Mariano Trebino (https://github.com/mtrebi)
+// Modified by:  Alexey Orlov (https://github.com/m110h)
 // Modified:     08/08/2020
 // Licence:      MIT licence
 /////////////////////////////////////////////////////////////////////////////
@@ -19,6 +19,7 @@ CAllocator::CAllocator(): Allocator(0) {}
 CAllocator::~CAllocator(){}
 
 void CAllocator::Init() {}
+void CAllocator::Reset() {}
 
 void* CAllocator::Allocate(const std::size_t size, const std::size_t alignment)
 {
@@ -27,7 +28,7 @@ void* CAllocator::Allocate(const std::size_t size, const std::size_t alignment)
 
 void CAllocator::Free(void* ptr)
 {
-    assert("CAllocator::Free: ptr is NULL" && ptr);
+    assert("CAllocator::Free: passed argument is NULL" && ptr);
 	operator delete (ptr);
 	ptr = nullptr;
 }

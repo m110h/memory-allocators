@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:         Utils.h
 // Description:  ...
-// Author:       Mariano Trebino
-// Modified by:  Alexey Orlov
+// Author:       Mariano Trebino (https://github.com/mtrebi)
+// Modified by:  Alexey Orlov (https://github.com/m110h)
 // Modified:     08/08/2020
 // Licence:      MIT licence
 /////////////////////////////////////////////////////////////////////////////
@@ -33,16 +33,20 @@ public:
 		std::size_t padding = CalculatePadding(baseAddress, alignment);
 		std::size_t neededSpace = headerSize;
 
-		if (padding < neededSpace){
-			// Header does not fit - Calculate next aligned address that header fits
-			neededSpace -= padding;
+		if (padding < neededSpace)
+        {
+            // Header does not fit - Calculate next aligned address that header fits
+            neededSpace -= padding;
 
-			// How many alignments I need to fit the header
-        	if(neededSpace % alignment > 0){
-		        padding += alignment * (1+(neededSpace / alignment));
-        	}else {
-		        padding += alignment * (neededSpace / alignment);
-        	}
+            // How many alignments I need to fit the header
+            if(neededSpace % alignment > 0)
+            {
+                padding += alignment * (1+(neededSpace / alignment));
+            }
+            else
+            {
+                padding += alignment * (neededSpace / alignment);
+            }
 		}
 
 		return padding;

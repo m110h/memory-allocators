@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:         Benchmark.h
 // Description:  ...
-// Author:       Mariano Trebino
-// Modified by:  Alexey Orlov
+// Author:       Mariano Trebino (https://github.com/mtrebi)
+// Modified by:  Alexey Orlov (https://github.com/m110h)
 // Modified:     08/08/2020
 // Licence:      MIT licence
 /////////////////////////////////////////////////////////////////////////////
@@ -18,7 +18,6 @@
 namespace m110h
 {
 
-// https://ravesli.com/urok-129-tajming-koda-vremya-vypolneniya-programmy/
 // https://en.cppreference.com/w/cpp/chrono/duration/duration_cast
 class Timer
 {

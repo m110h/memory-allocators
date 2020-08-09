@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:         StackAllocator.h
 // Description:  ...
-// Author:       Mariano Trebino
-// Modified by:  Alexey Orlov
+// Author:       Mariano Trebino (https://github.com/mtrebi)
+// Modified by:  Alexey Orlov (https://github.com/m110h)
 // Modified:     08/08/2020
 // Licence:      MIT licence
 /////////////////////////////////////////////////////////////////////////////
@@ -26,8 +26,7 @@ public:
     virtual void* Allocate(const std::size_t size, const std::size_t alignment = 0) final;
     virtual void Free(void* ptr) final;
     virtual void Init() final;
-
-    void Reset();
+	virtual void Reset() final;
 
 protected:
     void* m_start_ptr {nullptr};
