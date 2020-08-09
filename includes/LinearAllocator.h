@@ -1,26 +1,41 @@
+/////////////////////////////////////////////////////////////////////////////
+// Name:         LinearAllocator.h
+// Description:  ...
+// Author:       Mariano Trebino
+// Modified by:  Alexey Orlov
+// Modified:     08/08/2020
+// Licence:      MIT licence
+/////////////////////////////////////////////////////////////////////////////
+
 #ifndef LINEARALLOCATOR_H
 #define LINEARALLOCATOR_H
 
 #include "Allocator.h"
 
-class LinearAllocator : public Allocator {
-protected:
-	void* m_start_ptr = nullptr;
-	std::size_t m_offset;
+namespace mtrebi
+{
+
+class LinearAllocator : public Allocator
+{
 public:
-	LinearAllocator(const std::size_t totalSize);
+	explicit LinearAllocator(const std::size_t totalSize);
 
-	virtual ~LinearAllocator();
+	LinearAllocator(LinearAllocator &linearAllocator) = delete;
+	LinearAllocator& operator=(const LinearAllocator& r) = delete;
 
-	virtual void* Allocate(const std::size_t size, const std::size_t alignment = 0) override;
-	
-	virtual void Free(void* ptr) override;
+	~LinearAllocator();
 
-	virtual void Init() override;
+	virtual void* Allocate(const std::size_t size, const std::size_t alignment = 0) final;
+	virtual void Free(void* ptr) final;
+	virtual void Init() final;
 
-	virtual void Reset();
-private:
-	LinearAllocator(LinearAllocator &linearAllocator);
+	void Reset();
+
+protected:
+	void* m_start_ptr {nullptr};
+	std::size_t m_offset {0};
 };
+
+}
 
 #endif /* LINEARALLOCATOR_H */

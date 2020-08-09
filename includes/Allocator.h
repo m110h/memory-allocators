@@ -1,15 +1,23 @@
+/////////////////////////////////////////////////////////////////////////////
+// Name:         Allocator.h
+// Description:  ...
+// Author:       Mariano Trebino
+// Modified by:  Alexey Orlov
+// Modified:     08/08/2020
+// Licence:      MIT licence
+/////////////////////////////////////////////////////////////////////////////
+
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
 #include <cstddef> // size_t
 
+namespace mtrebi
+{
+
 class Allocator {
-protected:
-    std::size_t m_totalSize;
-    std::size_t m_used;   
-    std::size_t m_peak;
 public:
-    Allocator(const std::size_t totalSize);
+    explicit Allocator(const std::size_t totalSize);
 
     virtual ~Allocator();
 
@@ -19,8 +27,17 @@ public:
 
     virtual void Init() = 0;
 
-    friend class Benchmark;
+    std::size_t GetUsed();
+    std::size_t GetPeak();
+    std::size_t GetTotal();
+
+protected:
+    std::size_t m_totalSize;
+    std::size_t m_used;
+    std::size_t m_peak;
 };
+
+}
 
 #endif /* ALLOCATOR_H */
 

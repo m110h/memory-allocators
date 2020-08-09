@@ -42,3 +42,12 @@ main
 # Windows Compilation
 build.bat
 /build/
+
+# Output directory for a library
+lib/*
+
+# Codeblocks project files 
+build-codeblocks/
+
+# Directory for temporary files
+tmp/

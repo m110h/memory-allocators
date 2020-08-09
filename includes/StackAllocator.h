@@ -1,31 +1,46 @@
+/////////////////////////////////////////////////////////////////////////////
+// Name:         StackAllocator.h
+// Description:  ...
+// Author:       Mariano Trebino
+// Modified by:  Alexey Orlov
+// Modified:     08/08/2020
+// Licence:      MIT licence
+/////////////////////////////////////////////////////////////////////////////
+
 #ifndef STACKALLOCATOR_H
 #define STACKALLOCATOR_H
 
 #include "Allocator.h"
 
+namespace mtrebi
+{
+
 class StackAllocator : public Allocator {
-protected:
-    void* m_start_ptr = nullptr;
-    std::size_t m_offset;
 public:
-    StackAllocator(const std::size_t totalSize);
+    explicit StackAllocator(const std::size_t totalSize);
+    ~StackAllocator();
 
-    virtual ~StackAllocator();
+    StackAllocator(StackAllocator &stackAllocator) = delete;
+    StackAllocator& operator=(const StackAllocator& r) = delete;
 
-    virtual void* Allocate(const std::size_t size, const std::size_t alignment = 0) override;
+    virtual void* Allocate(const std::size_t size, const std::size_t alignment = 0) final;
+    virtual void Free(void* ptr) final;
+    virtual void Init() final;
 
-    virtual void Free(void* ptr);
+    void Reset();
 
-    virtual void Init() override;
+protected:
+    void* m_start_ptr {nullptr};
+    std::size_t m_offset {0};
 
-    virtual void Reset();
 private:
-    StackAllocator(StackAllocator &stackAllocator);
-
-    struct AllocationHeader {
+    struct AllocationHeader
+    {
         char padding;
     };
 
 };
+
+}
 
 #endif /* STACKALLOCATOR_H */

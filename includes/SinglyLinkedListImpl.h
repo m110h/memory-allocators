@@ -1,27 +1,46 @@
-#include "SinglyLinkedList.h"
+/////////////////////////////////////////////////////////////////////////////
+// Name:         SinglyLinkedListImpl.h
+// Description:  ...
+// Author:       Mariano Trebino
+// Modified by:  Alexey Orlov
+// Modified:     08/08/2020
+// Licence:      MIT licence
+/////////////////////////////////////////////////////////////////////////////
+
+namespace mtrebi
+{
 
 template <class T>
-SinglyLinkedList<T>::SinglyLinkedList(){
-    
-}
+SinglyLinkedList<T>::SinglyLinkedList() {}
 
 template <class T>
-void SinglyLinkedList<T>::insert(Node* previousNode, Node* newNode){
-    if (previousNode == nullptr) {
+void SinglyLinkedList<T>::insert(Node* previousNode, Node* newNode)
+{
+    if (previousNode == nullptr)
+    {
         // Is the first node
-        if (head != nullptr) {
+        if (head != nullptr)
+        {
             // The list has more elements
-            newNode->next = head;           
-        }else {
+            newNode->next = head;
+        }
+        else
+        {
             newNode->next = nullptr;
         }
+
         head = newNode;
-    } else {
-        if (previousNode->next == nullptr){
+    }
+    else
+    {
+        if (previousNode->next == nullptr)
+        {
             // Is the last node
             previousNode->next = newNode;
             newNode->next = nullptr;
-        }else {
+        }
+        else
+        {
             // Is a middle node
             newNode->next = previousNode->next;
             previousNode->next = newNode;
@@ -30,17 +49,26 @@ void SinglyLinkedList<T>::insert(Node* previousNode, Node* newNode){
 }
 
 template <class T>
-void SinglyLinkedList<T>::remove(Node* previousNode, Node* deleteNode){
-    if (previousNode == nullptr){
+void SinglyLinkedList<T>::remove(Node* previousNode, Node* deleteNode)
+{
+    if (previousNode == nullptr)
+    {
         // Is the first node
-        if (deleteNode->next == nullptr){
+        if (deleteNode->next == nullptr)
+        {
             // List only has one element
-            head = nullptr;            
-        }else {
+            head = nullptr;
+        }
+        else
+        {
             // List has more elements
             head = deleteNode->next;
         }
-    }else {
+    }
+    else
+    {
         previousNode->next = deleteNode->next;
     }
+}
+
 }

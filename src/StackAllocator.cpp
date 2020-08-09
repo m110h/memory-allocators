@@ -1,72 +1,115 @@
+/////////////////////////////////////////////////////////////////////////////
+// Name:         StackAllocator.cpp
+// Description:  ...
+// Author:       Mariano Trebino
+// Modified by:  Alexey Orlov
+// Modified:     08/08/2020
+// Licence:      MIT licence
+/////////////////////////////////////////////////////////////////////////////
+
 #include "StackAllocator.h"
 #include "Utils.h"  /* CalculatePadding */
-#include <stdlib.h>     /* malloc, free */
-#include <algorithm>    /* max */
-#ifdef _DEBUG
+
+#include <algorithm>
+#include <new>
+#include <cassert>
+#include <limits>
+
+#ifdef _DEBUG_OUTPUT_
 #include <iostream>
 #endif
 
-StackAllocator::StackAllocator(const std::size_t totalSize)
-: Allocator(totalSize) {
+namespace mtrebi
+{
 
+StackAllocator::StackAllocator(const std::size_t totalSize): Allocator(totalSize) {}
+
+StackAllocator::~StackAllocator()
+{
+    if (m_start_ptr)
+    {
+        operator delete (m_start_ptr);
+        m_start_ptr = nullptr;
+    }
 }
 
-void StackAllocator::Init() {
-    if (m_start_ptr != nullptr) {
-        free(m_start_ptr);
+void StackAllocator::Init()
+{
+    if (m_start_ptr)
+    {
+        operator delete (m_start_ptr);
+        m_start_ptr = nullptr;
     }
-    m_start_ptr = malloc(m_totalSize);
+
+    m_start_ptr = operator new(m_totalSize);
     m_offset = 0;
 }
 
-StackAllocator::~StackAllocator() {
-    free(m_start_ptr);
-    m_start_ptr = nullptr;
-}
+void* StackAllocator::Allocate(const std::size_t size, const std::size_t alignment)
+{
+    assert("StackAllocator::Allocate: allocator isn't initialized, m_start_ptr is NULL" && m_start_ptr);
 
-void* StackAllocator::Allocate(const std::size_t size, const std::size_t alignment) {
-    const std::size_t currentAddress = (std::size_t)m_start_ptr + m_offset;
+    const std::size_t currentAddress = reinterpret_cast<std::size_t>(m_start_ptr) + m_offset;
 
-    std::size_t padding = Utils::CalculatePaddingWithHeader(currentAddress, alignment, sizeof (AllocationHeader));
+    std::size_t padding = Utils::CalculatePaddingWithHeader(currentAddress, alignment, sizeof(AllocationHeader));
 
-    if (m_offset + padding + size > m_totalSize) {
+    if ( (m_offset + padding + size) > m_totalSize )
+    {
         return nullptr;
     }
+
     m_offset += padding;
 
     const std::size_t nextAddress = currentAddress + padding;
-    const std::size_t headerAddress = nextAddress - sizeof (AllocationHeader);
-    AllocationHeader allocationHeader{padding};
-    AllocationHeader * headerPtr = (AllocationHeader*) headerAddress;
-    headerPtr = &allocationHeader;
-    
+
+    assert("StackAllocator::Allocate: nextAddress < sizeof(AllocationHeader)" && nextAddress >= sizeof(AllocationHeader));
+    const std::size_t headerAddress = nextAddress - sizeof(AllocationHeader);
+
+    AllocationHeader* headerPtr = reinterpret_cast<AllocationHeader*>(headerAddress);
+    assert("StackAllocator::Allocate: padding > std::numeric_limits<char>::max()" && padding <= std::numeric_limits<char>::max());
+    // std::size_t to char (!)
+    headerPtr->padding = padding;
+
     m_offset += size;
 
-#ifdef _DEBUG
+#ifdef _DEBUG_OUTPUT_
     std::cout << "A" << "\t@C " << (void*) currentAddress << "\t@R " << (void*) nextAddress << "\tO " << m_offset << "\tP " << padding << std::endl;
 #endif
     m_used = m_offset;
     m_peak = std::max(m_peak, m_used);
 
-    return (void*) nextAddress;
+    return reinterpret_cast<void*>(nextAddress);
 }
 
-void StackAllocator::Free(void *ptr) {
-    // Move offset back to clear address
-    const std::size_t currentAddress = (std::size_t) ptr;
-    const std::size_t headerAddress = currentAddress - sizeof (AllocationHeader);
-    const AllocationHeader * allocationHeader{ (AllocationHeader *) headerAddress};
+void StackAllocator::Free(void *ptr)
+{
+    assert("StackAllocator::Free: allocator isn't initialized, m_start_ptr is NULL" && m_start_ptr);
+    assert("StackAllocator::Free: passed argument is NULL" && ptr);
 
-    m_offset = currentAddress - allocationHeader->padding - (std::size_t) m_start_ptr;
+    // Move offset back to clear address
+    const std::size_t currentAddress = reinterpret_cast<std::size_t>(ptr);
+
+    assert("StackAllocator::Free: currentAddress < sizeof(AllocationHeader)" && currentAddress >= sizeof(AllocationHeader));
+    const std::size_t headerAddress = currentAddress - sizeof(AllocationHeader);
+
+    const AllocationHeader* allocationHeader = reinterpret_cast<AllocationHeader*>(headerAddress);
+
+    assert("StackAllocator::Free: currentAddress < (allocationHeader->padding + reinterpret_cast<std::size_t>(m_start_ptr))" && ( currentAddress >= (allocationHeader->padding + reinterpret_cast<std::size_t>(m_start_ptr)) ) );
+    m_offset = currentAddress - (allocationHeader->padding + reinterpret_cast<std::size_t>(m_start_ptr));
     m_used = m_offset;
 
-#ifdef _DEBUG
+#ifdef _DEBUG_OUTPUT_
     std::cout << "F" << "\t@C " << (void*) currentAddress << "\t@F " << (void*) ((char*) m_start_ptr + m_offset) << "\tO " << m_offset << std::endl;
 #endif
 }
 
-void StackAllocator::Reset() {
+void StackAllocator::Reset()
+{
+    assert("StackAllocator::Reset: allocator isn't initialized, m_start_ptr is NULL" && m_start_ptr);
+
     m_offset = 0;
     m_used = 0;
     m_peak = 0;
+}
+
 }
