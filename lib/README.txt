@@ -1,0 +1,1 @@
+This directory is an output directory for binary archive library.
