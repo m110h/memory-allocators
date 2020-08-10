@@ -24,10 +24,31 @@ The goal, then, is to understand how the most common allocators work, what they 
 
 # Build instructions
 
+## Linux and Codeblocks
+
 ```c
-git clone https://github.com/mtrebi/memory-allocators.git
-cmake -S memory-allocator -B build 
-cmake --build build
+$ git clone https://github.com/m110h/memory-allocators.git
+$ mkdir build
+$ cd build
+$ cmake -G "CodeBlocks - Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+```
+## Windows, Codeblocks and MinGW
+
+```c
+$ git clone https://github.com/m110h/memory-allocators.git
+$ mkdir build
+$ cd build
+$ cmake -G "CodeBlocks - MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+```
+
+## Windows, Makefiles and MinGW
+
+```c
+$ git clone https://github.com/m110h/memory-allocators.git
+$ mkdir build
+$ cd build
+$ cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
+$ mingw32-make
 ```
 
 # What's wrong with Malloc?
