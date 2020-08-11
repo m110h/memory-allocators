@@ -17,9 +17,9 @@
 &nbsp;[Acknowledgments](https://github.com/mtrebi/memory-allocators#acknowledgments)  <br/> 
 
 # Introduction
-When applications need more memory this can be allocated in the heap (rather than in the stack) in _runtime_. This memory is called 'dynamic memory' because it can't be known at compile time and its need changes during the execution. Our programs can ask for dynamic memory usin 'malloc'. Malloc returns an address to a position in memory where we can store our data. Once we're done with that data, we can call 'free' to free the memory and let others processes use it.
+When applications need more memory this can be allocated in the heap (rather than in the stack) in _runtime_. This memory is called 'dynamic memory' because it can't be known at compile time and its need changes during the execution. Our programs can ask for dynamic memory using 'new'. 'new' returns an address to a position in memory where we can store our data. Once we're done with that data, we can call 'delete' to free the memory and let others processes use it.
 
-For this project I've implemented different ways to manage by ourselves dynamic memory in C++.This means that instead of using native calls like 'malloc' or 'free' we're going to use a custom memory allocator that will do this for us but in a more efficient way.
+For this project I've implemented different ways to manage by ourselves dynamic memory in C++.This means that instead of using native calls like 'new' or 'delete' we're going to use a custom memory allocator that will do this for us but in a more efficient way.
 The goal, then, is to understand how the most common allocators work, what they offer and compare them to see which one performs better.
 
 # Build instructions
