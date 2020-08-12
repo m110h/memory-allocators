@@ -51,15 +51,15 @@ $ cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
 $ mingw32-make
 ```
 
-# What's wrong with Malloc?
+# What's wrong with New?
 * **General purpose**: Being a general purpose operation means that it must work in all cases (from 1byte to 1GB or more...). For this reason the implementation is not as efficient as it could be if the needs were more specific.
-* **Slow**: Sometimes, when allocating memory, malloc needs to change from user to kernel mode to get more memory from the system. When this happens, malloc turns out to be super slow!
+* **Slow**: Sometimes, when allocating memory, 'new' needs to change from user to kernel mode to get more memory from the system. When this happens, 'new' turns out to be super slow!
 
 # Custom allocators
 Because every program has specific needs, it makes no sense to use a general purpose allocator. We can choose the right allocator that works best for us. This way we can increase our **performance**.
 
 In general, custom allocators share some features:
-* **Low number of mallocs**: Any custom allocator tries to keep the number of mallocs low. To do that, they malloc _big chunks of memory_ and then, they manage this chunk internally to provide smaller allocations.
+* **Low number of allocations**: Any custom allocator tries to keep the number of allocations low. To do that, they allocate _big chunks of memory_ and then, they manage this chunk internally to provide smaller allocations.
 * **Data structures**: Secondary data structures like _Linked Lists_, _Trees_, _Stacks_ to manage these big chunks of memory. Usually they are used to keep track of the allocated and/or free portions of memory to _speed up_ operations.
 * **Constraints**: Some allocators are very specific and have constraints over the data or operations that can be performed. This allows them to achieve a high performance but can only be used in some applications. 
 
