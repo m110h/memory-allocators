@@ -52,11 +52,10 @@ void FreeListAllocator::Init()
 void* FreeListAllocator::Allocate(const std::size_t size, const std::size_t alignment)
 {
     assert("FreeListAllocator::Allocate: allocator isn't initialized, m_start_ptr is NULL" && m_start_ptr);
+    assert("FreeListAllocator::Allocate: Allocation size must be bigger" && size > sizeof(Node));
+    assert("FreeListAllocator::Allocate: Alignment must be 8 at least" && alignment >= 8);
 
     const std::size_t allocationHeaderSize = sizeof(FreeListAllocator::AllocationHeader);
-
-    assert("FreeListAllocator::Allocate: Allocation size must be bigger" && size >= sizeof(Node));
-    assert("FreeListAllocator::Allocate: Alignment must be 8 at least" && alignment >= 8);
 
     // Search through the free list for a free block that has enough space to allocate our data
 
@@ -86,8 +85,8 @@ void* FreeListAllocator::Allocate(const std::size_t size, const std::size_t alig
     assert("FreeListAllocator::Allocate: affectedNode->data.blockSize < requiredSize" && affectedNode->data.blockSize >= requiredSize);
     const std::size_t rest = affectedNode->data.blockSize - requiredSize;
 
-    // an issue with Free memory fixed here: [rest >= (sizeof(Node) + alignment)] instead [rest > 0]
-    if ( rest >= (sizeof(Node) + alignment) )
+    // an issue with Free memory fixed here: [rest > sizeof(Node)] instead [rest > 0]
+    if ( rest > sizeof(Node) )
     {
         // We have to split the block into the [data block] and a [free block] of size 'rest'
 

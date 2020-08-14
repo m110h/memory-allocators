@@ -9,15 +9,19 @@
 #include <iostream>
 #include <string>
 #include <array>
+#include <chrono>
+#include <random>
 
 #include "FreeListAllocator.h"
 
-#define DBG_CONSTRUCTOR_DESTRUCTOR
+//#define DBG_CONSTRUCTOR_DESTRUCTOR
+
+const std::size_t AMOUNT_OF_ITEMS {10000};
 
 class Base
 {
 public:
-    Base()
+    explicit Base()
     {
 #ifdef DBG_CONSTRUCTOR_DESTRUCTOR
         std::cout << "base constructor" << std::endl;
@@ -34,21 +38,20 @@ public:
     virtual void Does() = 0;
 };
 
-class Child: public Base
+class Child1: public Base
 {
 public:
-    Child(const std::string& _msg)
+    explicit Child1(const std::string& _msg): msg(_msg)
     {
 #ifdef DBG_CONSTRUCTOR_DESTRUCTOR
-        std::cout << "child constructor" << std::endl;
+        std::cout << "child1 constructor" << std::endl;
 #endif
-        msg = _msg;
     }
 
-    virtual ~Child()
+    virtual ~Child1()
     {
 #ifdef DBG_CONSTRUCTOR_DESTRUCTOR
-        std::cout << "child destructor" << std::endl;
+        std::cout << "child1 destructor" << std::endl;
 #endif
     }
 
@@ -59,6 +62,33 @@ public:
 
 private:
     std::string msg {""};
+};
+
+class Child2: public Base
+{
+public:
+    explicit Child2(const std::string& _msg1, const std::string& _msg2): msg1(_msg1), msg2(_msg2)
+    {
+#ifdef DBG_CONSTRUCTOR_DESTRUCTOR
+        std::cout << "child2 constructor" << std::endl;
+#endif
+    }
+
+    virtual ~Child2()
+    {
+#ifdef DBG_CONSTRUCTOR_DESTRUCTOR
+        std::cout << "child2 destructor" << std::endl;
+#endif
+    }
+
+    virtual void Does() override
+    {
+        std::cout << msg1 << msg2 << std::endl;
+    }
+
+private:
+    std::string msg1 {""};
+    std::string msg2 {""};
 };
 
 class ResourceManager
@@ -84,7 +114,7 @@ public:
     }
 
 private:
-    ResourceManager(): _allocator(sizeof(Child)*10000, mtrebi::FreeListAllocator::FIND_BEST)
+    ResourceManager(): _allocator(sizeof(Child2)*AMOUNT_OF_ITEMS, mtrebi::FreeListAllocator::FIND_BEST)
     {
         std::cout << "ResourceManager()" << std::endl;
         _allocator.Init();
@@ -98,14 +128,16 @@ void TestSingleAllocation()
 {
     mtrebi::Allocator* _allocator = ResourceManager::getInstance().GetAllocator();
 
+    std::size_t aligment = 8;
+
     Base* b_ptr = nullptr;
 
     {
-        Child* c_ptr = (Child*)_allocator->Allocate(sizeof(Child),8);
+        Child1* c_ptr = (Child1*)_allocator->Allocate(sizeof(Child1), aligment);
 
         if (c_ptr)
         {
-            new(c_ptr) Child("\tChild->Does()");
+            new(c_ptr) Child1("\tChild->Does()");
             b_ptr = c_ptr;
         }
     }
@@ -123,29 +155,57 @@ void TestSingleAllocation()
 
 void TestMultiAllocation()
 {
-    std::array<Base*,5000> container {nullptr};
+    std::array<Base*, AMOUNT_OF_ITEMS> container {nullptr};
 
     mtrebi::Allocator* _allocator = ResourceManager::getInstance().GetAllocator();
+
+    const std::size_t aligment = 8;
+
+    static std::mt19937 _generator(std::chrono::system_clock::now().time_since_epoch().count());
+    static std::uniform_int_distribution<int> _range(0, 1);
+
+    std::size_t child1_counter {0};
+    std::size_t child2_counter {0};
+    std::size_t bad_alloc_counter {0};
 
     for (size_t i=0; i<container.size(); i++)
     {
         Base* b_ptr = nullptr;
 
+        if (_range(_generator))
         {
-            Child* c_ptr = (Child*)_allocator->Allocate(sizeof(Child),8);
+            Child1* c_ptr = (Child1*)_allocator->Allocate(sizeof(Child1), aligment);
 
             if (c_ptr)
             {
-                new(c_ptr) Child("\tChild->Does()");
+                new(c_ptr) Child1("\tChild->Does()");
                 b_ptr = c_ptr;
+
+                child1_counter++;
             }
-            else
+        }
+        else
+        {
+            Child2* c_ptr = (Child2*)_allocator->Allocate(sizeof(Child2), aligment);
+
+            if (c_ptr)
             {
-                std::cout << "Not enough memory" << std::endl;
+                new(c_ptr) Child2("\tChild2->", "Does()");
+                b_ptr = c_ptr;
+
+                child2_counter++;
             }
         }
 
-        container[i] = b_ptr;
+        if (b_ptr)
+        {
+            container[i] = b_ptr;
+        }
+        else
+        {
+            //std::cout << "Not enough memory" << std::endl;
+            bad_alloc_counter++;
+        }
     }
 /*
     for (size_t i=0; i<container.size(); i++)
@@ -154,7 +214,11 @@ void TestMultiAllocation()
             container[i]->Does();
     }
 */
-    std::cout << "total: " << _allocator->GetTotal() << " used: " << _allocator->GetUsed() << std::endl;
+    std::cout << "total memory (in bytes): " << _allocator->GetTotal() << "; used memory (in bytes): " << _allocator->GetUsed() << std::endl;
+
+    std::cout << "amount of child1: " << child1_counter;
+    std::cout << "; amount of child2: " << child2_counter;
+    std::cout << "; amount of bad allocation: " << bad_alloc_counter << std::endl;
 
     //system("pause");
 
@@ -170,13 +234,13 @@ void TestMultiAllocation()
         }
     }
 
-    std::cout << "total: " << _allocator->GetTotal() << " used: " << _allocator->GetUsed() << std::endl;
+    std::cout << "total memory (in bytes): " << _allocator->GetTotal() << "; used memory (in bytes): " << _allocator->GetUsed() << std::endl;
 }
 
 int main()
 {
-    TestSingleAllocation();
-    //TestMultiAllocation();
+    //TestSingleAllocation();
+    TestMultiAllocation();
 
     return 0;
 }
