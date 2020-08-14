@@ -16,7 +16,7 @@
 
 //#define DBG_CONSTRUCTOR_DESTRUCTOR
 
-const std::size_t AMOUNT_OF_ITEMS {10000};
+const std::size_t MAX_AMOUNT_OF_ITEMS {10000};
 
 class Base
 {
@@ -114,7 +114,7 @@ public:
     }
 
 private:
-    ResourceManager(): _allocator(sizeof(Child2)*AMOUNT_OF_ITEMS, mtrebi::FreeListAllocator::FIND_BEST)
+    ResourceManager(): _allocator(sizeof(Child2)*MAX_AMOUNT_OF_ITEMS, mtrebi::FreeListAllocator::FIND_BEST)
     {
         std::cout << "ResourceManager()" << std::endl;
         _allocator.Init();
@@ -155,7 +155,7 @@ void TestSingleAllocation()
 
 void TestMultiAllocation()
 {
-    std::array<Base*, AMOUNT_OF_ITEMS> container {nullptr};
+    std::array<Base*, MAX_AMOUNT_OF_ITEMS> container {nullptr};
 
     mtrebi::Allocator* _allocator = ResourceManager::getInstance().GetAllocator();
 
