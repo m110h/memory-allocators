@@ -33,7 +33,7 @@ private:
     struct AllocationHeader
     {
         std::size_t blockSize;
-        char padding;
+        std::size_t padding;
     };
 
     typedef SinglyLinkedList<FreeHeader>::Node Node;
@@ -45,9 +45,9 @@ private:
     SinglyLinkedList<FreeHeader> m_freeList;
 
 public:
-    FreeListAllocator(const std::size_t totalSize, const PlacementPolicy pPolicy);
+    explicit FreeListAllocator(const std::size_t totalSize, const PlacementPolicy pPolicy = PlacementPolicy::FIND_BEST);
 
-    FreeListAllocator(FreeListAllocator &freeListAllocator) = delete;
+    FreeListAllocator(FreeListAllocator &src) = delete;
     FreeListAllocator& operator=(const FreeListAllocator& r) = delete;
 
     ~FreeListAllocator();

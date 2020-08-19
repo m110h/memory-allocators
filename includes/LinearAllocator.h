@@ -20,7 +20,7 @@ class LinearAllocator : public Allocator
 public:
 	explicit LinearAllocator(const std::size_t totalSize);
 
-	LinearAllocator(LinearAllocator &linearAllocator) = delete;
+	LinearAllocator(LinearAllocator &src) = delete;
 	LinearAllocator& operator=(const LinearAllocator& r) = delete;
 
 	~LinearAllocator();
@@ -30,7 +30,7 @@ public:
 	virtual void Init() final;
 	virtual void Reset() final;
 
-protected:
+private:
 	void* m_start_ptr {nullptr};
 	std::size_t m_offset {0};
 };

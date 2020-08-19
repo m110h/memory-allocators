@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        free_list_allocator_example.cpp
-// Purpose:     It shows how to use FreeListAllocator
-// Author:      Alexey Orlov (https://github.com/m110h)
-// Created:     02/07/2020
+// Name:        heap_allocator_example.cpp
+// Purpose:     It shows how to use HeapAllocator
+// Author:      Alexey Orlov
+// Created:     18/08/2020
 // Licence:     MIT licence
 /////////////////////////////////////////////////////////////////////////////
 
@@ -12,11 +12,11 @@
 #include <chrono>
 #include <random>
 
-#include "FreeListAllocator.h"
+#include "HeapAllocator.h"
 
 //#define DBG_CONSTRUCTOR_DESTRUCTOR
 
-const std::size_t MAX_AMOUNT_OF_ITEMS {10000};
+const std::size_t MAX_AMOUNT_OF_ITEMS {600};
 
 class Base
 {
@@ -113,14 +113,14 @@ public:
     }
 
 private:
-    ResourceManager(): _allocator(sizeof(Child2)*MAX_AMOUNT_OF_ITEMS, mtrebi::FreeListAllocator::FIND_BEST)
+    ResourceManager(): _allocator( sizeof(Child2) * MAX_AMOUNT_OF_ITEMS )
     {
         std::cout << "ResourceManager()" << std::endl;
         _allocator.Init();
     }
 
 private:
-    mtrebi::FreeListAllocator _allocator;
+    mtrebi::HeapAllocator _allocator;
 };
 
 void TestSingleAllocation()
@@ -136,10 +136,12 @@ void TestSingleAllocation()
 
         if (c_ptr)
         {
-            new(c_ptr) Child1("\tChild->Does()");
+            new(c_ptr) Child1("\tChild1->Does()");
             b_ptr = c_ptr;
         }
     }
+
+    std::cout << "total memory (in bytes): " << _allocator->GetTotal() << "; used memory (in bytes): " << _allocator->GetUsed() << std::endl;
 
     if (b_ptr)
     {
@@ -150,6 +152,10 @@ void TestSingleAllocation()
 
         b_ptr = nullptr;
     }
+
+    std::cout << "total memory (in bytes): " << _allocator->GetTotal() << "; used memory (in bytes): " << _allocator->GetUsed() << std::endl;
+
+    _allocator->Reset();
 }
 
 void TestMultiAllocation()
@@ -234,11 +240,13 @@ void TestMultiAllocation()
     }
 
     std::cout << "total memory (in bytes): " << _allocator->GetTotal() << "; used memory (in bytes): " << _allocator->GetUsed() << std::endl;
+
+    _allocator->Reset();
 }
 
 int main()
 {
-    //TestSingleAllocation();
+    TestSingleAllocation();
     TestMultiAllocation();
 
     return 0;

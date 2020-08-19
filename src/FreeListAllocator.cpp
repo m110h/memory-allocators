@@ -13,7 +13,6 @@
 #include <new>
 #include <cassert>   /* assert */
 #include <limits>  /* limits_max */
-#include <algorithm>
 
 #ifdef _DEBUG_OUTPUT_
 #include <iostream>
@@ -31,7 +30,7 @@ FreeListAllocator::~FreeListAllocator()
 {
     if (m_start_ptr != nullptr)
     {
-        operator delete (m_start_ptr);
+        ::operator delete (m_start_ptr);
         m_start_ptr = nullptr;
     }
 }
@@ -40,11 +39,11 @@ void FreeListAllocator::Init()
 {
     if (m_start_ptr != nullptr)
     {
-        operator delete(m_start_ptr);
+        ::operator delete(m_start_ptr);
         m_start_ptr = nullptr;
     }
 
-    m_start_ptr = operator new(m_totalSize);
+    m_start_ptr = ::operator new(m_totalSize);
 
     Reset();
 }
@@ -107,7 +106,7 @@ void* FreeListAllocator::Allocate(const std::size_t size, const std::size_t alig
     headerAddressPtr->padding = alignmentPadding;
 
     m_used += requiredSize;
-    m_peak = std::max(m_peak, m_used);
+    m_peak = (m_peak < m_used) ? m_used : m_peak;
 
 #ifdef _DEBUG_OUTPUT_
     std::cout << "A" << "\t@H " << (void*) headerAddress << "\tD@ " <<(void*) dataAddress << "\tS " << ((FreeListAllocator::AllocationHeader *) headerAddress)->blockSize <<  "\tAP " << alignmentPadding << "\tP " << padding << "\tM " << m_used << "\tR " << rest << std::endl;

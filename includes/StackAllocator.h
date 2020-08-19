@@ -20,7 +20,7 @@ public:
     explicit StackAllocator(const std::size_t totalSize);
     ~StackAllocator();
 
-    StackAllocator(StackAllocator &stackAllocator) = delete;
+    StackAllocator(StackAllocator &src) = delete;
     StackAllocator& operator=(const StackAllocator& r) = delete;
 
     virtual void* Allocate(const std::size_t size, const std::size_t alignment = 0) final;
@@ -28,7 +28,7 @@ public:
     virtual void Init() final;
 	virtual void Reset() final;
 
-protected:
+private:
     void* m_start_ptr {nullptr};
     std::size_t m_offset {0};
 
