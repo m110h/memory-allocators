@@ -170,12 +170,6 @@ If we used instead a Sorted Linked List of free and allocated blocks, the comple
 
 _Complexity: **O(N)**_ where N is the number of free blocks
 
-### Red black tree data structure
-The purpose of using a Red black tree is to speed up allocations and deallocations. In the Linked List (or sequential) implementation every time an operation was made we needed to iterate the Linked List. This was O(N) in all cases.
-
-Using Red Black trees we can reduce its complexity to O(log N) while keeping space complexity quite low because the tree data is stored inside the free memory blocks. In addition, this structure allows a **best-fit** algorithm to be used, reducing the fragmentation and keeping performance. However, an additional sorted Doubly Linked list is required to store allocated and free elements in order to be able to do coalescence operations in O(1).
-This implementation is the most common and most used in real systems because it offers high flexibility while keeping performance very high.
-
 # Benchmarks
 Now its time to make sure that all the effort in designing and implementing custom memory allocators is worth. 
 I've made several benchmarks with different block sizes, number of operations, random order, etc. The time benchmark measures the time execution that takes initializing the allocator 'Init()' (malloc big chunk, setup additional data structures...) and untill the last operation (allocation or free) is performed.
