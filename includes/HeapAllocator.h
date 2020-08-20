@@ -14,48 +14,12 @@
 namespace mtrebi
 {
 
-struct BlockHeader
-{
-    std::size_t blockSize {0};
-
-    friend bool operator<(const BlockHeader& left, const BlockHeader& right);
-    friend bool operator>(const BlockHeader& left, const BlockHeader& right);
-    friend bool operator<(const std::size_t& left, const BlockHeader& right);
-    friend bool operator>(const std::size_t& left, const BlockHeader& right);
-};
-
-class Heap
-{
-public:
-    explicit Heap(const std::size_t& _capacity);
-    ~Heap();
-
-    bool Insert(BlockHeader* _header);
-    BlockHeader* Extract(std::size_t allocationSize);
-
-    std::size_t GetSize() const;
-    void Clear();
-
-private:
-    std::size_t Parent(std::size_t i) const;
-    std::size_t Left(std::size_t i) const;
-    std::size_t Right(std::size_t i) const;
-
-    void SiftUp(std::size_t i);
-    void SiftDown(std::size_t i);
-    void Swap(BlockHeader* h1, BlockHeader* h2);
-
-private:
-    BlockHeader** container {nullptr};
-
-    std::size_t size {0};
-    std::size_t capacity {0};
-};
+class Heap;
 
 class HeapAllocator : public Allocator
 {
 public:
-	explicit HeapAllocator(const std::size_t totalSize);
+	explicit HeapAllocator(std::size_t totalSize, std::size_t maxEntities = 1000);
 
 	HeapAllocator(HeapAllocator &src) = delete;
 	HeapAllocator& operator=(const HeapAllocator& r) = delete;
@@ -67,9 +31,52 @@ public:
 	virtual void Init() final;
 	virtual void Reset() final;
 
+public:
+    struct BlockHeader
+    {
+        std::size_t blockSize {0};
+
+        friend bool operator<(const BlockHeader& left, const BlockHeader& right);
+        friend bool operator>(const BlockHeader& left, const BlockHeader& right);
+        friend bool operator<(const std::size_t& left, const BlockHeader& right);
+        friend bool operator>(const std::size_t& left, const BlockHeader& right);
+    };
+
 private:
+    std::size_t m_heap_capacity {0};
+
 	void* m_start_ptr {nullptr};
 	Heap* m_heap {nullptr};
+};
+
+class Heap
+{
+public:
+    explicit Heap(std::size_t _capacity);
+    ~Heap();
+
+    bool Insert(HeapAllocator::BlockHeader* _header);
+    HeapAllocator::BlockHeader* Extract(std::size_t allocationSize);
+
+    std::size_t GetSize() const;
+    bool IsFull() const;
+    void Clear();
+
+private:
+    std::size_t Parent(std::size_t i) const;
+    std::size_t Left(std::size_t i) const;
+    std::size_t Right(std::size_t i) const;
+
+    void SiftUp(std::size_t i);
+    void SiftDown(std::size_t i);
+
+    void Swap(HeapAllocator::BlockHeader* h1, HeapAllocator::BlockHeader* h2);
+
+private:
+    HeapAllocator::BlockHeader** container {nullptr};
+
+    std::size_t m_size {0};
+    std::size_t m_capacity {0};
 };
 
 }

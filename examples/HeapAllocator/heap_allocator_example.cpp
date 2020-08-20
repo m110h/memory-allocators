@@ -16,7 +16,7 @@
 
 //#define DBG_CONSTRUCTOR_DESTRUCTOR
 
-const std::size_t MAX_AMOUNT_OF_ITEMS {600};
+const std::size_t MAX_AMOUNT_OF_ENTITIES {10000};
 
 class Base
 {
@@ -113,7 +113,7 @@ public:
     }
 
 private:
-    ResourceManager(): _allocator( sizeof(Child2) * MAX_AMOUNT_OF_ITEMS )
+    ResourceManager(): _allocator( sizeof(Child2) * MAX_AMOUNT_OF_ENTITIES, MAX_AMOUNT_OF_ENTITIES )
     {
         std::cout << "ResourceManager()" << std::endl;
         _allocator.Init();
@@ -160,7 +160,7 @@ void TestSingleAllocation()
 
 void TestMultiAllocation()
 {
-    std::array<Base*, MAX_AMOUNT_OF_ITEMS> container {nullptr};
+    std::array<Base*, MAX_AMOUNT_OF_ENTITIES> container {nullptr};
 
     mtrebi::Allocator* _allocator = ResourceManager::getInstance().GetAllocator();
 
@@ -178,6 +178,7 @@ void TestMultiAllocation()
         Base* b_ptr = nullptr;
 
         if (_range(_generator))
+        //if (0)
         {
             Child1* c_ptr = (Child1*)_allocator->Allocate(sizeof(Child1), aligment);
 
@@ -208,7 +209,6 @@ void TestMultiAllocation()
         }
         else
         {
-            //std::cout << "Not enough memory" << std::endl;
             bad_alloc_counter++;
         }
     }
@@ -224,8 +224,6 @@ void TestMultiAllocation()
     std::cout << "amount of child1: " << child1_counter;
     std::cout << "; amount of child2: " << child2_counter;
     std::cout << "; amount of bad allocation: " << bad_alloc_counter << std::endl;
-
-    //system("pause");
 
     for (size_t i=0; i<container.size(); i++)
     {

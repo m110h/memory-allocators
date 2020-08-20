@@ -16,31 +16,31 @@ namespace mtrebi
 
 // BlockHeader Impl
 
-bool operator<(const BlockHeader& left, const BlockHeader& right)
+bool operator<(const HeapAllocator::BlockHeader& left, const HeapAllocator::BlockHeader& right)
 {
     return ( left.blockSize < right.blockSize );
 }
 
-bool operator>(const BlockHeader& left, const BlockHeader& right)
+bool operator>(const HeapAllocator::BlockHeader& left, const HeapAllocator::BlockHeader& right)
 {
     return ( left.blockSize > right.blockSize );
 }
 
-bool operator<(const std::size_t& left, const BlockHeader& right)
+bool operator<(const std::size_t& left, const HeapAllocator::BlockHeader& right)
 {
     return ( left < right.blockSize );
 }
 
-bool operator>(const std::size_t& left, const BlockHeader& right)
+bool operator>(const std::size_t& left, const HeapAllocator::BlockHeader& right)
 {
     return ( left > right.blockSize );
 }
 
 // Heap Impl
 
-Heap::Heap(const std::size_t& _capacity): size(0), capacity(_capacity)
+Heap::Heap(std::size_t _capacity): m_size(0), m_capacity(_capacity)
 {
-    container = new BlockHeader* [_capacity];
+    container = new HeapAllocator::BlockHeader* [_capacity];
 }
 
 Heap::~Heap()
@@ -48,15 +48,15 @@ Heap::~Heap()
     delete [] container; container = nullptr;
 }
 
-bool Heap::Insert(BlockHeader* _header)
+bool Heap::Insert(HeapAllocator::BlockHeader* _header)
 {
-    if (size == capacity)
+    if (m_size == m_capacity)
     {
         return false;
     }
 
-    size++;
-    std::size_t i = size - 1;
+    m_size++;
+    std::size_t i = m_size - 1;
 
     container[i] = _header;
 
@@ -66,19 +66,19 @@ bool Heap::Insert(BlockHeader* _header)
 }
 
 // log(n)
-BlockHeader* Heap::Extract(std::size_t allocationSize)
+HeapAllocator::BlockHeader* Heap::Extract(std::size_t allocationSize)
 {
     //assert(size > 0 && "Heap is empty");
-    if (size == 0)
+    if (m_size == 0)
     {
         return nullptr;
     }
 
-    if (size == 1)
+    if (m_size == 1)
     {
         if (allocationSize < *container[0])
         {
-            size = 0;
+            m_size = 0;
             return container[0];
         }
 
@@ -87,16 +87,16 @@ BlockHeader* Heap::Extract(std::size_t allocationSize)
 
     std::size_t i = 0;
 
-    while ( (i < size) && (allocationSize > *container[i]))
+    while ( (i < m_size) && (allocationSize > *container[i]))
     {
         std::size_t tmp = i;
 
         std::size_t l = Left(i);
         std::size_t r = Right(i);
 
-        if ( (l < size) && (*container[tmp] < *container[l]) )
+        if ( (l < m_size) && (*container[tmp] < *container[l]) )
             tmp = l;
-        if ( (r < size) && (*container[tmp] < *container[r]) )
+        if ( (r < m_size) && (*container[tmp] < *container[r]) )
             tmp = r;
 
         if (tmp == i)
@@ -107,23 +107,28 @@ BlockHeader* Heap::Extract(std::size_t allocationSize)
         i = tmp;
     }
 
-    BlockHeader* blockPtr = container[i];
+    HeapAllocator::BlockHeader* blockPtr = container[i];
 
-    container[i] = container[size-1];
-    size--;
+    container[i] = container[m_size-1];
+    m_size--;
     SiftDown(i);
 
     return blockPtr;
 }
 
-std::size_t Heap::GetSize() const { return size; }
+std::size_t Heap::GetSize() const { return m_size; }
+
+bool Heap::IsFull() const
+{
+    return m_size == m_capacity;
+}
 
 void Heap::Clear()
 {
-    for (std::size_t i=0; i<size; i++)
+    for (std::size_t i=0; i<m_size; i++)
         container[i] = nullptr;
 
-    size = 0;
+    m_size = 0;
 }
 
 std::size_t Heap::Parent(std::size_t i) const { return (i-1)/2; }
@@ -150,12 +155,12 @@ void Heap::SiftDown(std::size_t i)
         l = Left(i);
         r = Right(i);
 
-        if ( (l < size) && (*container[tmp] < *container[l]) )
+        if ( (l < m_size) && (*container[tmp] < *container[l]) )
         {
             tmp = l;
         }
 
-        if ( (r < size) && (*container[tmp] < *container[r]) )
+        if ( (r < m_size) && (*container[tmp] < *container[r]) )
         {
             tmp = r;
         }
@@ -170,9 +175,9 @@ void Heap::SiftDown(std::size_t i)
     }
 }
 
-void Heap::Swap(BlockHeader* h1, BlockHeader* h2)
+void Heap::Swap(HeapAllocator::BlockHeader* h1, HeapAllocator::BlockHeader* h2)
 {
-    BlockHeader* tmp = h1;
+    HeapAllocator::BlockHeader* tmp = h1;
     h1 = h2;
     h2 = tmp;
 }
@@ -180,7 +185,8 @@ void Heap::Swap(BlockHeader* h1, BlockHeader* h2)
 // HeapAllocator Impl
 
 
-HeapAllocator::HeapAllocator(const std::size_t totalSize): Allocator(totalSize) {}
+HeapAllocator::HeapAllocator(std::size_t totalSize, std::size_t maxEntities):
+    Allocator(totalSize + (maxEntities + 1)*sizeof(BlockHeader)), m_heap_capacity(maxEntities + 1) {}
 
 HeapAllocator::~HeapAllocator()
 {
@@ -213,7 +219,7 @@ void HeapAllocator::Init()
         m_heap = nullptr;
     }
 
-    m_heap = new Heap(1000);
+    m_heap = new Heap(m_heap_capacity);
 
     Reset();
 }
@@ -226,8 +232,8 @@ void HeapAllocator::Reset()
     m_heap->Clear();
 
     BlockHeader* header = reinterpret_cast<BlockHeader*>(m_start_ptr);
-
     header->blockSize = m_totalSize;
+
     assert("HeapAllocator::Reset: bad insert to heap" && m_heap->Insert(header));
     m_used = m_peak = 0;
 }
