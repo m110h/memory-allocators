@@ -11,7 +11,6 @@
 #include "Utils.h"  /* CalculatePadding */
 
 #include <cassert>
-#include <algorithm>
 #include <new>
 
 #ifdef _DEBUG_OUTPUT_
@@ -73,7 +72,7 @@ void* LinearAllocator::Allocate(const std::size_t size, const std::size_t alignm
 #endif
 
     m_used = m_offset;
-    m_peak = std::max(m_peak, m_used);
+    m_peak = (m_peak < m_used) ? m_used : m_peak;
 
     return reinterpret_cast<void*>(nextAddress);
 }

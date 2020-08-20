@@ -10,7 +10,6 @@
 #include "StackAllocator.h"
 #include "Utils.h"  /* CalculatePadding */
 
-#include <algorithm>
 #include <new>
 #include <cassert>
 #include <limits>
@@ -72,11 +71,12 @@ void* StackAllocator::Allocate(const std::size_t size, const std::size_t alignme
 
     m_offset += size;
 
+    m_used = m_offset;
+    m_peak = (m_peak < m_used) ? m_used : m_peak;
+
 #ifdef _DEBUG_OUTPUT_
     std::cout << "A" << "\t@C " << (void*) currentAddress << "\t@R " << (void*) nextAddress << "\tO " << m_offset << "\tP " << padding << std::endl;
 #endif
-    m_used = m_offset;
-    m_peak = std::max(m_peak, m_used);
 
     return reinterpret_cast<void*>(nextAddress);
 }

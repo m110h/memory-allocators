@@ -150,6 +150,8 @@ void TestSingleAllocation()
 
         b_ptr = nullptr;
     }
+
+    _allocator->Reset();
 }
 
 void TestMultiAllocation()
@@ -231,11 +233,13 @@ void TestMultiAllocation()
     }
 
     std::cout << "total memory (in bytes): " << _allocator->GetTotal() << "; used memory (in bytes): " << _allocator->GetUsed() << std::endl;
+
+    _allocator->Reset();
 }
 
 int main()
 {
-    //TestSingleAllocation();
+    TestSingleAllocation();
     TestMultiAllocation();
 
     return 0;

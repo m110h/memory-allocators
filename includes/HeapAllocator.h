@@ -19,6 +19,8 @@ class Heap;
 class HeapAllocator : public Allocator
 {
 public:
+    /*
+    */
 	explicit HeapAllocator(std::size_t totalSize, std::size_t maxEntities = 1000);
 
 	HeapAllocator(HeapAllocator &src) = delete;

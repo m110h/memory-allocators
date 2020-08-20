@@ -50,7 +50,7 @@ Heap::~Heap()
 
 bool Heap::Insert(HeapAllocator::BlockHeader* _header)
 {
-    if (m_size == m_capacity)
+    if (IsFull())
     {
         return false;
     }

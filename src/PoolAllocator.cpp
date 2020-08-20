@@ -10,7 +10,6 @@
 #include "PoolAllocator.h"
 
 #include <cassert>
-#include <algorithm>    //max
 #include <new>
 
 #ifdef _DEBUG_OUTPUT_
@@ -62,7 +61,8 @@ void* PoolAllocator::Allocate(const std::size_t allocationSize, const std::size_
     }
 
     m_used += m_chunkSize;
-    m_peak = std::max(m_peak, m_used);
+    m_peak = (m_peak < m_used) ? m_used : m_peak;
+
 #ifdef _DEBUG_OUTPUT_
     std::cout << "A" << "\t@S " << m_start_ptr << "\t@R " << (void*) freePosition << "\tM " << m_used << std::endl;
 #endif
