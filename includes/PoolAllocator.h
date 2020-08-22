@@ -27,7 +27,7 @@ private:
 public:
     PoolAllocator(const std::size_t totalSize, const std::size_t chunkSize);
 
-    PoolAllocator(PoolAllocator &src);
+    PoolAllocator(PoolAllocator &src) = delete;
     PoolAllocator& operator=(const PoolAllocator& r) = delete;
 
     ~PoolAllocator();

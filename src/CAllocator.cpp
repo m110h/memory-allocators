@@ -23,13 +23,13 @@ void CAllocator::Reset() {}
 
 void* CAllocator::Allocate(const std::size_t size, const std::size_t alignment)
 {
-    return operator new(size);
+    return ::operator new(size);
 }
 
 void CAllocator::Free(void* ptr)
 {
     assert("CAllocator::Free: passed argument is NULL" && ptr);
-    operator delete (ptr);
+    ::operator delete (ptr);
     ptr = nullptr;
 }
 
