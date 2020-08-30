@@ -206,7 +206,6 @@ This is a brief summary describing when you should use each allocator. From more
 * **Pool allocator**. Your data has definitely a structure. All elements of your data have the same size. This is your choice, fast and no fragmentation.
 * **Buddy allocator** (_Not implemented here_). Your data is organized in exponential sizes power-of-two (1,2,4,8,16,32...). This allocator performs extremely well when data is structure in that way, being fast and wasting little space.
 * **Free list allocator**. No structure or common behavior. This allocator allows you to allocate and free memory as you wish. This is a general purpose allocator that works much better than malloc, but is not as good as the previous allocators, given its flexibility to work in all situations.
-* **Heap allocator**. The same free list allocator, but faster and efficient.
 
 # Last thoughts
 * Avoid dynamic memory as much as possible. Its behavior is unexpected and a source of problems
