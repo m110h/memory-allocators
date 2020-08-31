@@ -19,7 +19,7 @@ class DefaultAllocator : public Allocator
 {
 public:
 	DefaultAllocator();
-    ~DefaultAllocator();
+	~DefaultAllocator();
 
 	virtual void* Allocate(const std::size_t size, const std::size_t alignment = 0) final;
 	virtual void Free(void* ptr) final;
