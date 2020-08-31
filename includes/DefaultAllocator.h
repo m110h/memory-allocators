@@ -1,25 +1,25 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:         CAllocator.h
-// Description:  ...
+// Name:         DefaultAllocator.h
+// Description:  Simple wrapper around operations 'new' and 'delete'
 // Author:       Mariano Trebino (https://github.com/mtrebi)
 // Modified by:  Alexey Orlov (https://github.com/m110h)
 // Modified:     08/08/2020
 // Licence:      MIT licence
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef CALLOCATOR_H
-#define CALLOCATOR_H
+#ifndef DEFAULT_ALLOCATOR_H
+#define DEFAULT_ALLOCATOR_H
 
 #include "Allocator.h"
 
 namespace mtrebi
 {
 
-class CAllocator : public Allocator
+class DefaultAllocator : public Allocator
 {
 public:
-	CAllocator();
-    ~CAllocator();
+	DefaultAllocator();
+    ~DefaultAllocator();
 
 	virtual void* Allocate(const std::size_t size, const std::size_t alignment = 0) final;
 	virtual void Free(void* ptr) final;
@@ -29,5 +29,5 @@ public:
 
 }
 
-#endif /* CALLOCATOR_H */
+#endif /* DEFAULT_ALLOCATOR_H */
 
